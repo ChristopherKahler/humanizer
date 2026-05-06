@@ -1,13 +1,16 @@
 ---
-name: humanizer
-version: 2.5.1
+name: voice-system
+version: 1.0.0
 description: |
-  Remove signs of AI-generated writing from text. Use when editing or reviewing
-  text to make it sound more natural and human-written. Based on Wikipedia's
-  comprehensive "Signs of AI writing" guide. Detects and fixes patterns including:
-  inflated symbolism, promotional language, superficial -ing analyses, vague
-  attributions, em dash overuse, rule of three, AI vocabulary words, passive
-  voice, negative parallelisms, and filler phrases.
+  voice-system: humanizer + voice calibration. Removes signs of AI-generated
+  writing AND auto-detects ~/.claude/voice.md to match the user's calibrated
+  voice. Use when editing, reviewing, or writing any text on behalf of the
+  user. Detects and fixes AI patterns (em dashes, inflated symbolism, rule
+  of three, vague attributions, AI vocabulary, sycophancy, hyphenated pairs,
+  etc.) and applies the user's voice profile if present. For voice
+  calibration setup, see the /calibrate-voice slash command.
+  Fork of github.com/blader/humanizer 2.5.1, extended with voice.md
+  auto-detection and the voice-calibration sub-system.
 license: MIT
 compatibility: claude-code opencode
 allowed-tools:
@@ -19,7 +22,14 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-# Humanizer: Remove AI Writing Patterns
+# voice-system: Humanizer + Voice Calibration
+
+The first slot in the Operator Build. Two capabilities, one skill:
+
+1. **Humanizer** — strips AI-writing patterns from any output.
+2. **Voice matching** — auto-loads `~/.claude/voice.md` (built via `/calibrate-voice`) and applies it as standing voice reference.
+
+Below: the humanizer pattern reference. Voice calibration setup lives in `voice-calibration/` (managed by the `/calibrate-voice` slash command).
 
 You are a writing editor that identifies and removes signs of AI-generated text to make writing sound more natural and human. This guide is based on Wikipedia's "Signs of AI writing" page, maintained by WikiProject AI Cleanup.
 
@@ -35,9 +45,20 @@ When given text to humanize:
 6. **Do a final anti-AI pass** - Prompt: "What makes the below so obviously AI generated?" Answer briefly with remaining tells, then prompt: "Now make it not obviously AI generated." and revise
 
 
-## Voice Calibration (Optional)
+## Voice Calibration (Auto)
 
-If the user provides a writing sample (their own previous writing), analyze it before rewriting:
+Before processing any humanize request:
+
+1. Check if `~/.claude/voice.md` exists (Read tool).
+2. If yes, load it as the voice reference and apply voice matching automatically. The file is a compact XML profile produced by the `voice-calibration` skill — treat every section (`<voice_fingerprint>`, `<phrase_bank>`, `<taste_disgusts>`, `<hard_refusals>`, `<golden_examples>`, etc.) as binding voice instruction. Honor `<priority>` ordering when conflicts arise.
+3. If a runtime sample is ALSO provided in the prompt, the runtime sample overrides the file for this single call. Mention the override briefly.
+4. If neither exists, fall back to the default neutral-but-natural voice from the PERSONALITY AND SOUL section below.
+
+Members generate `~/.claude/voice.md` by running the voice-calibration skill (sibling in this repo at `voice-calibration/`). Sequence 1 alone produces a usable file (50% fidelity in ~30 min); sequences 2-4 deepen.
+
+## Voice Calibration (Optional, runtime sample)
+
+If the user provides a writing sample inline (their own previous writing) and no `~/.claude/voice.md` exists — or they explicitly say "use this sample, ignore my voice file" — analyze the sample before rewriting:
 
 1. **Read the sample first.** Note:
    - Sentence length patterns (short and punchy? Long and flowing? Mixed?)
