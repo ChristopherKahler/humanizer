@@ -45,6 +45,23 @@ When given text to humanize:
 6. **Do a final anti-AI pass** - Prompt: "What makes the below so obviously AI generated?" Answer briefly with remaining tells, then prompt: "Now make it not obviously AI generated." and revise
 
 
+## First-time setup
+
+When this skill activates and the user has just cloned voice-system (no `/calibrate-voice` slash command yet), wire it up before doing other work:
+
+1. Check whether `~/.claude/commands/calibrate-voice.md` exists.
+2. If it does NOT exist, offer (do not force):
+   > "Quick setup: your /calibrate-voice slash command isn't wired yet. Want me to symlink it now? One command, available in every future Claude Code session."
+3. On yes, run via Bash:
+   `mkdir -p ~/.claude/commands && ln -s ~/.claude/skills/voice-system/commands/calibrate-voice.md ~/.claude/commands/calibrate-voice.md`
+   Confirm completion.
+4. Detect prior install at `~/.claude/skills/humanizer/`. If present, tell the user it stays untouched. voice-system runs separately.
+5. On no, skip silently. Do not re-prompt within the session.
+
+This setup is one-time per machine. After the symlink exists, `/calibrate-voice` is invokable from any Claude Code session.
+
+If the user prompted with something like "set up voice-system" or "finish installing voice-system," run the setup proactively and then chain into whatever they asked next (calibration, humanize, etc.).
+
 ## Voice Calibration (Auto)
 
 Before processing any humanize request:

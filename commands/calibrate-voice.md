@@ -47,7 +47,7 @@ Parse the argument the user passed after `/calibrate-voice`:
 1. Verify `~/.claude/skills/voice-system/SKILL.md` exists. If not, tell the user:
    > "voice-system not installed. Clone it first:
    > `git clone https://github.com/ChristopherKahler/humanizer ~/.claude/skills/voice-system`
-   > then `cd ~/.claude/skills/voice-system && bash install.sh`."
+   > then ask me to 'set up voice-system' in any Claude Code session."
    Stop.
 2. Verify the relevant task file exists at its absolute path before loading.
 3. For sequences, sample-bootstrap, and refine: load `context/interviewer.md` first as system context.

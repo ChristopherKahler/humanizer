@@ -11,18 +11,25 @@ Fork of [github.com/blader/humanizer](https://github.com/blader/humanizer) 2.5.1
 
 ## Install
 
+Two steps. One bash command, one prose prompt.
+
+**1. Clone:**
+
 ```bash
 git clone https://github.com/ChristopherKahler/humanizer ~/.claude/skills/voice-system
-cd ~/.claude/skills/voice-system && bash install.sh
 ```
 
-That clones the skill into `~/.claude/skills/voice-system/` and runs the installer. The installer creates one symlink so Claude Code discovers `/calibrate-voice` as a slash command.
+**2. Tell Claude to finish setup.** Open Claude Code in any directory and say:
 
-The installer is idempotent (safe to re-run) and detects existing `~/.claude/skills/humanizer/` installs without touching them. voice-system installs to its own path.
+> Set up voice-system and run voice calibration.
+
+Claude detects the fresh clone, wires the `/calibrate-voice` slash command (one symlink), warns you if you have a separate humanizer install at `~/.claude/skills/humanizer/` (it stays untouched), then walks you into calibration. About 30 minutes for the quick win.
+
+After setup, `/calibrate-voice` is invokable from any Claude Code session via subcommands (`samples`, `s2`/`s3`/`s4`, `compile`, `demo`, `refine`, `status`).
 
 ### OpenCode
 
-OpenCode scans `~/.claude/skills/` for skill compatibility, so the same install works. The slash command symlink only matters for Claude Code; OpenCode users invoke calibration by asking the skill directly.
+OpenCode scans `~/.claude/skills/` for skill compatibility, so the same clone works. The slash command symlink only matters for Claude Code; OpenCode users invoke calibration by asking the skill directly ("calibrate my voice").
 
 ## Usage
 

@@ -44,13 +44,16 @@ The wizard is the most accessible proof of the 50/90 frame. Members run it once 
 ## 3. Install architecture
 
 ```
-member runs:
-  git clone https://github.com/ChristopherKahler/humanizer ~/.claude/skills/voice-system
-  cd ~/.claude/skills/voice-system && bash install.sh
+member workflow:
+  1. git clone https://github.com/ChristopherKahler/humanizer ~/.claude/skills/voice-system
+  2. open Claude Code anywhere, say: "Set up voice-system and run voice calibration."
+  3. Claude reads SKILL.md, sees no /calibrate-voice symlink yet, runs Bash:
+     ln -s ~/.claude/skills/voice-system/commands/calibrate-voice.md ~/.claude/commands/calibrate-voice.md
+  4. Claude proceeds into the calibration interview.
 
-after install:
+after step 3:
   ~/.claude/skills/voice-system/                    ← skill (auto-activates)
-  ├── SKILL.md                                       ← humanizer + voice.md auto-detection
+  ├── SKILL.md                                       ← humanizer + voice.md auto-detection + first-time setup logic
   ├── commands/
   │   └── calibrate-voice.md                         ← slash command source
   ├── voice-calibration/                             ← slash command support (NOT a skill)
@@ -68,20 +71,20 @@ after install:
   │       ├── demo.md                                ← side-by-side BEFORE/AFTER
   │       ├── status.md                              ← pipeline state, no compile
   │       └── refine.md                              ← feedback loop on real AI output
-  ├── install.sh                                     ← creates symlink (idempotent)
   ├── README.md                                      ← user-facing docs
   ├── BUILD-CONTEXT.md                               ← this file
   ├── LICENSE
   └── WARP.md
 
   ~/.claude/commands/
-  └── calibrate-voice.md → symlink → ../skills/voice-system/commands/calibrate-voice.md
+  └── calibrate-voice.md → symlink → ../skills/voice-system/commands/calibrate-voice.md  (created by Claude during setup)
 ```
 
 **Key install behaviors:**
 
-- The clone target is `voice-system`, not `humanizer`. Members with an existing `~/.claude/skills/humanizer/` install are not affected — `install.sh` detects and reports.
-- `install.sh` only creates the slash command symlink. Skill discovery happens automatically because the SKILL.md frontmatter declares `name: voice-system`.
+- The clone target is `voice-system`, not `humanizer`. Members with an existing `~/.claude/skills/humanizer/` install are not affected — Claude's setup step detects and reports it during the prose-prompt setup.
+- No bash install script. Setup happens through Claude's first-time setup logic in SKILL.md, triggered when the user prompts "set up voice-system" or similar. Claude runs one `ln -s` via the Bash tool. On-brand: AI does the work.
+- Skill discovery happens automatically because the SKILL.md frontmatter declares `name: voice-system`. The skill works for humanize tasks even before the slash command symlink exists — only `/calibrate-voice` invocation needs the symlink.
 - The `voice-calibration/` subdirectory has a README, not a SKILL.md, by design — to prevent Claude Code from auto-discovering it as a sub-skill.
 
 ---
